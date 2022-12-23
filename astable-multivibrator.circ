@@ -1,0 +1,42 @@
+Astable Multivibrator
+
+* The Astable multivibrator is a circuit that oscillates using two
+* cross coupled transistors to provide the oscillation feedback
+
+* define the npn transistor that we are using
+* (otherwise import this part from a library)
+* This specific 'part' is created by specifying the parameter values for the
+* model being used
+.model BC546B npn ( IS=7.59E-15 VAF=73.4 BF=480 IKF=0.0962 NE=1.2665
++ ISE=3.278E-15 IKR=0.03 ISC=2.00E-13 NC=1.2 NR=1 BR=5 RC=0.25 CJC=6.33E-12
++ FC=0.5 MJC=0.33 VJC=0.65 CJE=1.25E-11 MJE=0.55 VJE=0.65 TF=4.26E-10
++ ITF=0.6 VTF=3 XTF=20 RB=100 IRB=0.0001 RBM=10 RE=0.5 TR=1.50E-07)
+
+* Now we define the circuit
+* Power-supply
+VCC vcc 0 12
+
+* left R-C circuit
+R1 vcc q1c 100
+R2 vcc bq2 10k
+C1 q1c bq2 330n
+
+* right R-C circuit
+R4 vcc q2c 100
+R3 vcc bq1 10k
+C2 q2c bq1 330n
+
+* cross coupled transistors
+Q1 q1c bq1 0 BC546B
+Q2 q2c bq2 0 BC546B
+.end
+
+* set initial conditions
+.IC v(bq1)=0
+
+.control
+tran 10n 5m
+set filetype=ascii
+write astable-multivibrator.ngdat q1c q2c bq1 bq2 bq2-q1c bq1-q2c
+.endc
+
