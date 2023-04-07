@@ -1,4 +1,4 @@
-* Emitter Degenerated BJT Amplifier
+* Emitter Degenerated BJT Amplifier with bypassed emitter resistor
 
 * define BJT
 .model BC546B npn ( IS=7.59E-15 VAF=73.4 BF=480 IKF=0.0962 NE=1.2665
@@ -23,6 +23,8 @@ R2 base 0 10k
 Rc vcc col 10k
 Q1 col base emtr BC546B
 Re emtr 0 1k
+Ce emtr bi 1u
+Re2 bi 0 100
 
 * The input and load
 Cin input base 10u
@@ -30,11 +32,11 @@ Cout col out 10u
 Rload out 0 100k
 
 * Input description
-vin input 0 dc 0 ac 1 sin(0, 1m 500)
+vin input 0 dc 0 ac 1
 .end
 
 .control
-ac dec 100 1 10meg
+ac dec 10 1 10meg
 setplot ac1
 plot db(col) db(input)
 .endc
