@@ -1,0 +1,10 @@
+* Voltage divider circuit with descriptive node names
+Vin IN 0 DC 10
+R1 IN OUT 10k
+R2 OUT GND 20k
+.end
+.control
+setplot tran1
+plot v(IN) v(OUT) v(VOUT)
+tran 0.1ms 10ms
+.endc

@@ -1,0 +1,57 @@
+Phase Shift Oscillator
+
+* This circuit is an emitter degenerated bipolar amplifier.
+* It uses a highpass filter parallel to the emitter degeneration resistor to enhance the gain
+* at larger signal frequencies
+
+* define the npn transistor that we are using
+* (otherwise import this part from a library)
+* This specific 'part' is created by specifying the parameter values for the
+* model being used
+.model BC546B npn ( IS=7.59E-15 VAF=73.4 BF=480 IKF=0.0962 NE=1.2665
++ ISE=3.278E-15 IKR=0.03 ISC=2.00E-13 NC=1.2 NR=1 BR=5 RC=0.25 CJC=6.33E-12
++ FC=0.5 MJC=0.33 VJC=0.65 CJE=1.25E-11 MJE=0.55 VJE=0.65 TF=4.26E-10
++ ITF=0.6 VTF=3 XTF=20 RB=100 IRB=0.0001 RBM=10 RE=0.5 TR=1.50E-07)
+.include ./libs/nabla.lib
+
+* define the circuit
+* first the power source
+VCC vcc 0 9
+
+* amplifying transistor with emitter and collector resistor
+RC vcc out 6.8k
+Q1 out abase aemit 2N3904
+RE aemit 0 1.5K
+CE aemit 0 0.1u
+
+* resistors for biasing the base
+R1 vcc abase 57k
+R2 abase 0 4.5k
+
+* input coupling capacitor with input signal source
+* Cin in out 10n
+* Vin in 0 dc 0 ac 10m 
+* Vin in 0 dc 0 ac 10m *sin (0 1m 500)
+
+* output coupling capacitor with load
+*Cout out load 1u
+*RLoad load 0 100k
+
+* feedback circuit
+Cfb_1 out s1 10n
+Rfb_1 s1 0 1k
+Cfb_2 s1 s2 10n
+Rfb_2 s2 0 1k
+Cfb_3 s2 s3 10n
+Rfb_3 s3 abase
+
+* set initial conditions
+.IC v(out)=1
+.end
+
+* the following section defines what we want to simulate using the model
+.control
+tran 1n .5m
+*ac dec 1000000 1 50k
+plot s1 s2 abase out
+.endc

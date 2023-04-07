@@ -1,0 +1,7 @@
+Dual RC Ladder
+R1 int in 10k
+V1 in 0 dc 0 ac 1 PULSE (0 5 5m 100u 100u 20m 50m 0) 
+R2 int out 1k
+C1 int 0 1u
+C2 out 0 100n
+.end

@@ -1,0 +1,41 @@
+* Emitter Degenerated BJT Amplifier
+
+* define BJT
+.model BC546B npn ( IS=7.59E-15 VAF=73.4 BF=480 IKF=0.0962 NE=1.2665
++ ISE=3.278E-15 IKR=0.03 ISC=2.00E-13 NC=1.2 NR=1 BR=5 RC=0.25 CJC=6.33E-12
++ FC=0.5 MJC=0.33 VJC=0.65 CJE=1.25E-11 MJE=0.55 VJE=0.65 TF=4.26E-10
++ ITF=0.6 VTF=3 XTF=20 RB=100 IRB=0.0001 RBM=10 RE=0.5 TR=1.50E-07)
+
+* Circuit Description
+VCC vcc 0 20
+
+* Bias the base of the Amplifier
+* The 1/12 ratio set's the Voltage to 1.66V, leaving 1V after the
+* BJT diode drop
+R1 vcc base 110k
+R2 base 0 10k
+
+
+* The amplifier with the Collector and emitter resistor
+* As The base is set at 1.66V the emitter is going to be at
+* 1 V, Using a 1k emitter resistor gives us 1m current draw
+* at nominal temperature and 0 input
+Rc vcc col 10k
+Q1 col base emtr BC546B
+Re emtr 0 1k
+
+* The input and load
+Cin input base 10u
+Cout col out 10u
+Rload out 0 100k
+
+* Input description
+vin input 0 dc 0 ac 1 sin(0, 1m 500)
+.end
+
+.control
+
+*ac dec 10 1 10meg
+*setplot ac1
+*plot db(col) db(input)
+.endc

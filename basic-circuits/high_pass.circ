@@ -1,0 +1,12 @@
+* High-pass filter with frequency analysis
+Vin IN 0 AC 1
+R1 IN OUT 10k
+C1 OUT GND 1n
+.end
+
+.control
+ac dec 10 1Hz 100kHz
+setplot ac1
+plot db(out)
+.endc
+
