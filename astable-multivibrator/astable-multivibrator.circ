@@ -12,24 +12,40 @@ Astable Multivibrator
 + FC=0.5 MJC=0.33 VJC=0.65 CJE=1.25E-11 MJE=0.55 VJE=0.65 TF=4.26E-10
 + ITF=0.6 VTF=3 XTF=20 RB=100 IRB=0.0001 RBM=10 RE=0.5 TR=1.50E-07)
 
+.include ../libs/nabla.lib
+
 * Now we define the circuit
 * Power-supply
-VCC vcc 0 12
+VCC vcc 0 5
 
 * left R-C circuit
 R1 vcc q1c 100
 R2 vcc bq2 10k
-C1 q1c bq2 330n
+C1 q1c bq2 33n
 
 * right R-C circuit
 R4 vcc q2c 100
 R3 vcc bq1 10k
-C2 q2c bq1 330n
+C2 q2c bq1 33n
 
 * cross coupled transistors
 Q1 q1c bq1 0 BC546B
 Q2 q2c bq2 0 BC546B
 .end
+
+* load
+R5 q1c 0 50k
+
+* push pull stage for output
+Rbase q1c pps_base 3.3k
+* npn transistor on the high side
+Qout1 vcc pps_base out  2N3904
+* pnp transistor on the low side
+Qout2 0 pps_base out 2N3906
+* load the output
+R6 vcc out 5k
+R7 out 0 5k
+
 
 * set initial conditions
 .IC v(bq1)=0
@@ -42,5 +58,6 @@ let cap2 = v(bq2)-v(q1c)
 settype voltage cap1
 settype voltage cap2
 write astable-multivibrator.ngdat v(q1c) v(q2c) v(bq1) v(bq2) cap1 cap2
+plot out q1c pps_base
 .endc
 

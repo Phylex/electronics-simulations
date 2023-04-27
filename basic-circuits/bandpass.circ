@@ -1,0 +1,8 @@
+Bandpass
+Vin in 0 dc 0 ac 1
+R1 in  out 1k
+R2 out 0 .5k
+L1 out 0 10u
+C1 out 0 10u
+.end
+
