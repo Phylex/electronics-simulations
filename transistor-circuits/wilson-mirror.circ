@@ -1,0 +1,50 @@
+Wilson current mirror 
+
+* include the transistors that are used
+.include ../libs/nabla.lib
+
+VCC vcc 0 15
+
+* PNP Transistor that is used to set the current (c b e)
+Q1 rref rv vcc 2N3906
+R1 rref 0 14.4k
+
+* transistor that sets the load current
+Q2 rv rv vcc 2N3906
+
+* cascode transistor in the current path
+Q3 lout rref rv 2N3906
+
+* this is the load that is driven by the current mirror
+Rload lout 0 1k
+.end
+
+* here we scan over load resistances and plot the currents
+.control
+option savecurrents
+* set the static scan variables
+set scan_start_r = 100
+set scan_stop_r = 20k
+set scan_delta_r = 10
+let num_points = ($scan_stop_r - $scan_start_r)/$scan_delta_r
+
+* generate the list used in the foreach
+compose test_loads start=$scan_start_r stop=$scan_stop_r step=$scan_delta_r
+let load_currents = unitvec($&num_points + 1)
+let load_resistances = unitvec($&num_points + 1)
+
+* iterate over the resistances
+let i = 0
+foreach tl $&test_loads
+  let load_resistances[$&i] = $tl
+  if $&i > 0
+    set appendwrite
+  end
+  alter Rload $tl ; set the load resistor value to the value of the variable
+  op
+  print lout
+  let load_currents[$&i] = v(lout)/$tl
+  let i = i+1
+end
+plot load_currents vs load_resistances
+.endc
