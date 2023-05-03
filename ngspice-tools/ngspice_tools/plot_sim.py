@@ -2,8 +2,8 @@
 Module containing the command to plot data from ngspice
 """
 from itertools import cycle
-from ngspice_input import parse_ngspice_sim_output
-from plot_colors import PALETTS
+from .ngspice_input import parse_ngspice_sim_output
+from .plot_colors import PALETTS
 import matplotlib.pyplot as plt
 import click
 
@@ -23,7 +23,7 @@ import click
 @click.option("-d", "--dark", is_flag=True, default=False, show_default=True,
               help="Set the plot to dark background")
 @click.option("-c", "--colors",
-              type=click.Choice(PALETTS.keys(),
+              type=click.Choice([k for k in PALETTS.keys()],
                                 case_sensitive=False), default="blue-green",
               help="choose the color palette for the lines in the plot"
               )
@@ -32,9 +32,11 @@ import click
                                 case_sensitive=False),
               default="pdf",
               help="set the filetype of the image produced")
-def plot_ngspice(infile, output, width, height, dark, colors, filetype):
+def plot_ngspice(infile: click.File, output: click.Path,
+                 width: float, height: float,
+                 dark: bool, colors: str, filetype: str):
     """
-    Plot the variables in a ngspice ouptut file
+    Plot the variables in an ascii formatted ngspice ouptut file
     """
     if dark:
         plt.style.use('dark_background')
@@ -49,7 +51,3 @@ def plot_ngspice(infile, output, width, height, dark, colors, filetype):
                   label=v['name'], color=next(colors))
     fig.legend(bbox_to_anchor=(0.98, 0.8), title="Signals")
     fig.savefig(output + "." + filetype)
-
-
-if __name__ == "__main__":
-    plot_ngspice()

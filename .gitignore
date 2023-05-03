@@ -1,4 +1,10 @@
 libs/
 tars/
 ngspice-code/
-venv
+venv/
+dist/
+*.egg-info/
+*.ngdat
+*.dat
+*.ods
+__pycache__/

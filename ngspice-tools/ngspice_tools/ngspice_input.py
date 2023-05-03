@@ -1,10 +1,10 @@
 """
 Module containing functions to read in data from ngspice output
 """
-from typing import TextIO
+from typing import List, TextIO, Tuple
 
 
-def parse_ngspice_sim_output(file: TextIO) -> dict:
+def parse_ngspice_sim_output(file: TextIO) -> Tuple[str, str, List[str]]:
     """
     Parse the file created by the ngspice write command
     and return the data and metadata

@@ -76,6 +76,7 @@ R13 amp_out 0 100k
 .control
 tran 10n 10m
 set filetype=ascii
-plot amp_out int_out q_sym oa_in 
+write triangle-gen.ngdat v(amp_out) v(vgnd) v(int_out) v(q) v(q_sym)
+*plot amp_out int_out q_sym oa_in 
 .endc
 
