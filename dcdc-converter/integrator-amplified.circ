@@ -1,0 +1,46 @@
+Integrator using the lf356 OpAmp from the  library
+
+* This circuit is a standard integrator circuit using a general purpose TI operational amplifier
+
+* include the relevant library
+.include ../libs/ti-downloads/LF356.lib
+.include ../libs/ti-downloads/TLV2231.5_2
+.include ../libs/ti-downloads/TLE2426x.LIB
+.include ../libs/ad8603.lib
+
+* supply voltage
+VCC vcc 0 5
+
+* virtual ground
+R6 vcc vref 5k
+R7 vref 0 5k
+Xvgnd vref vcc 0 vgnd TLE2426x
+Cvl vgnd 0 10uf
+Cvh vcc vgnd 10uf
+
+* Input description
+* Be careful, this must be exactly symmetrical or the output will shift
+* all over the place (because it's an integrator remember)
+vin in 0 dc 0 ac 1 pulse (0.8 4.3 0 1u 1u 0.25m 0.502m 100)
+
+* inverting opamp
+Xintegrator_opamp oa_in oa_in_inv vcc 0 int_out AD8603
+
+* feedback circuit
+R5 vgnd oa_in 50k
+R1 in oa_in_inv 50k
+R2 int_out oa_in_inv 250k
+C1 int_out oa_in_inv 10n
+
+* amplifier with factor 3 -> R4/R3 = 2
+Xintegrated_sig_amp_opamp int_out amp_inv_in vcc 0 amp_out AD8603
+R3 amp_inv_in vgnd 20k
+R4 amp_out amp_inv_in 40k
+.end
+
+* the following section defines what we want to simulate using the model
+.control
+tran 200n 20m
+*ac dec 1000000 1 50k
+plot int_out in oa_in_inv amp_out vgnd
+.endc

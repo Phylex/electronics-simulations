@@ -1,0 +1,81 @@
+Triangle Generator
+
+* This circuit uses an astable multivibrator to generate an approximate square wave
+* runs the square wave through a Push-Pull stage to make it more symmetrical
+* (otherwise we get a 'low' voltage one diode drop above ground)
+* and then the output is integrated using the tlv2231 opamp
+* finally the output is again boosted by a second tlv2231 opamp
+* to get about 3V swing out
+
+.include ../libs/nabla.lib
+.include ../libs/ti-downloads/TLE2426x.LIB
+.include ../libs/ad8603.lib
+
+* Now we define the circuit
+* Power-supply
+VCC vcc 0 5
+
+* left R-C circuit
+R1 vcc q_not 100
+R2 vcc q_ctrl 10k
+C1 q_not q_ctrl 33n
+
+* right R-C circuit
+R4 vcc q 100
+R3 vcc q_not_ctrl 10.65k
+C2 q_not_ctrl q 33n
+
+* cross coupled transistors
+Q3A q q_ctrl 0 2N3904
+Q3B q_not q_not_ctrl 0 2N3904
+
+
+* Push pull stage 
+R5 q q_base 3.3k
+* npn transistor on the high side
+Q1 vcc q_base q_sym  2N3904
+* pnp transistor on the low side
+Q4 0 q_base q_sym 2N3906
+
+* This was a symmetric load to get current to flow
+* load the output
+* R6 vcc out 5k
+* R7 out 0 5k
+
+
+* Virtual ground 
+* need to be precision resistors
+R6 vcc v_gnd_ref 5k
+R7 v_gnd_ref 0 5k
+Xvgnd v_gnd_ref vcc 0 vgnd TLE2426x
+C3 vcc vgnd 10uf
+C4 vgnd 0 10uf
+
+* integrating opamp
+Xintegrator_opamp oa_in oa_in_inv vcc 0 int_out AD8603
+
+* feedback circuit
+R8 vgnd oa_in 50k
+R9 q_sym oa_in_inv 20k
+R10 int_out oa_in_inv 250k
+C5 int_out oa_in_inv 10n
+
+* amplifier with factor -> R4/R3
+Xintegrated_sig_amp_opamp int_out amp_inv_in vcc 0 amp_out AD8603
+R11 amp_inv_in vgnd 20k
+R12 amp_out amp_inv_in 15k
+
+* Load
+R13 amp_out 0 100k
+
+* set initial conditions
+* .IC v(bq1)=0
+.end
+
+
+.control
+tran 10n 10m
+set filetype=ascii
+plot amp_out int_out q_sym oa_in 
+.endc
+

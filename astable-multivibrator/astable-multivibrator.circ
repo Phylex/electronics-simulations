@@ -31,7 +31,6 @@ C2 q2c bq1 33n
 * cross coupled transistors
 Q1 q1c bq1 0 BC546B
 Q2 q2c bq2 0 BC546B
-.end
 
 * load
 R5 q1c 0 50k
