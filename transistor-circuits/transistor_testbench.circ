@@ -1,0 +1,45 @@
+* Transistor test bench for generating the plots of the
+* transistor characteristics
+
+* include the transistors that are used
+.include ../libs/nabla.lib
+
+Vc vce 0 dc 5
+Vb vbe 0 dc 0.4
+
+* Transistor that is used to set the current
+* emitter ----+
+*             |
+* base -----+ |
+*           | |
+* collector | |
+*  |  +-----+ |
+*  |  |  +----+
+*  |  |  |
+Q1 vce vbe 0 2N3906
+R1 rv 0 14.4k
+
+* here we scan over load resistances and plot the currents
+.control
+option savecurrents
+set scan_start_vbe = 0.1
+set scan_stop_vbe = 0.8
+set scan_delta_vbe = 0.1
+let num_points = ($scan_stop_vbe - $scan_start_vbe)/$scan_delta_r
+compose test_loads start=$scan_start_r stop=$scan_stop_r step=$scan_delta_r
+let load_currents = unitvec($&num_points + 1)
+let load_resistances = unitvec($&num_points + 1)
+let i = 0
+foreach tl $&test_loads
+  let load_resistances[$&i] = $tl
+  if $&i > 0
+    set appendwrite
+  end
+  alter Rload $tl ; set the load resistor value to the value of the variable
+  op
+  print lout
+  let load_currents[$&i] = v(lout)/$tl
+  let i = i+1
+end
+plot load_currents vs load_resistances
+.endc

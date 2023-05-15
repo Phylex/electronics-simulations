@@ -1,0 +1,94 @@
+Triangle Generator
+
+* This circuit uses an astable multivibrator to generate an approximate square wave
+* runs the square wave through a Push-Pull stage to make it more symmetrical
+* (otherwise we get a 'low' voltage one diode drop above ground)
+* and then the output is integrated using the tlv2231 opamp
+* finally the output is again boosted by a second tlv2231 opamp
+* to get about 3V swing out
+
+.include ../libs/nabla.lib
+.include ../libs/ti-downloads/TLE2426x.LIB ;
+.include ../libs/ti-downloads/LMV7219.MOD ; Comparator
+
+* Now we define the circuit
+* Power-supply
+VCC vcc 0 5
+vcmp vcmp 0 3
+
+* Astable multivibrator ======================================
+* left R-C circuit
+R1 vcc q_not 100
+R2 vcc q_ctrl 10k
+C1 q_not q_ctrl 10n
+
+* right R-C circuit
+R4 vcc q 100
+R3 vcc q_not_ctrl 10.45k
+C2 q_not_ctrl q 10n
+
+* cross coupled transistors
+Q3A q q_ctrl 0 2N3904
+Q3B q_not q_not_ctrl 0 2N3904
+
+
+* Push pull stage ============================================ 
+R5 q q_base 10k
+* npn transistor on the high side
+Q1 vcc q_base q_sym  2N3904
+* pnp transistor on the low side
+Q4 0 q_base q_sym 2N3906
+
+* Virtual ground ==============================================
+* need to be precision resistors
+R6 vcc v_gnd_ref 5k
+R7 v_gnd_ref 0 5k
+Xvgnd v_gnd_ref vcc 0 vgnd TLE2426x
+C3 vcc vgnd 10uf
+C4 vgnd 0 10uf
+
+* integrating stage =============================================
+
+* integrator with feedback circuit
+* The ADA 4807
+* Rdis vcc dis 10k
+* Xintegrator_opamp oa_in oa_in_inv vcc 0 int_out dis ADA4807
+
+Xintegrator_opamp oa_in oa_in_inv vcc 0 int_out TLV2221_TI_5_2
+R8 vgnd oa_in 20k
+R9 q_sym oa_in_inv 100k
+R10 int_out oa_in_inv 300k
+C5 int_out oa_in_inv 2.2n
+
+* amplifier with factor -> R12/R11
+Xintegrated_sig_amp_opamp int_out amp_inv_in vcc 0 triangle_wav TLV2221_TI_5_2
+R11 amp_inv_in vgnd 50k
+R12 triangle_wav amp_inv_in 200k
+
+
+* comparator stage that produces the pwm =========================
+
+* comparator stage
+* originally using a LMV7219
+Xcmp triangle_wav feedback_v vcc 0 pwm TLV2231_TI_5_2 
+* This voltage is going to be the feedback from the comparator
+R13 vcc feedback_v 15k
+R14 feedback_v 0 25k
+* feedback to add hysteresis
+Rf pwm feedback_v 2MEG
+* comparator output load
+Rpwml pwm 0 200k
+
+
+* Power switch stage
+Rpow vcc switchdrain 10
+X1 switchdrain pwm 0 ntd14n03r
+.end
+
+
+.control
+tran 10n 3m
+set filetype=ascii
+write pwm.ngdat v(triangle_wav) v(pwm) v(vgnd) v(int_out) v(q) v(q_sym)
+plot triangle_wav feedback_v pwm int_out q_sym
+.endc

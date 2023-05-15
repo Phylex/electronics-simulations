@@ -1,0 +1,23 @@
+testing the comparator
+.include ../libs/ti-downloads/LMV7219.MOD
+
+vcc vcc 0 dc 5
+vin vin 0 dc 2.5 ac 100m sin(2.5 500m 10k 0 0)
+
+R1 vcc cmp_v 25k
+R2 cmp_v 0 25k
+Rf sig cmp_v 2MEG
+
+Rin vin in_t 50k
+Rg in_t 0 2MEG
+
+* load resistor
+RL sig 0 100k
+
+Xcmp cmp_v in_t vcc 0 sig LMV7219
+
+.control
+tran 1n 1m
+plot vin cmp_v sig
+.endc
+.end

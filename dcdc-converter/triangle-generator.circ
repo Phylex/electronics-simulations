@@ -10,10 +10,12 @@ Triangle Generator
 .include ../libs/nabla.lib
 .include ../libs/ti-downloads/TLE2426x.LIB
 .include ../libs/ad8603.lib
+.include ../libs/AD8561.cir
 
 * Now we define the circuit
 * Power-supply
 VCC vcc 0 5
+vcmp vcmp 0 3
 
 * left R-C circuit
 R1 vcc q_not 100
@@ -66,6 +68,7 @@ R11 amp_inv_in vgnd 20k
 R12 amp_out amp_inv_in 15k
 
 * Load
+Xvoltage_cmp 
 R13 amp_out 0 100k
 
 * set initial conditions
