@@ -1,0 +1,20 @@
+Bandpass
+Vin in 0 dc 0 ac 0 sin(0 1 1k 0 0 0) 
+C1 in 0 10u
+.end
+
+
+.control
+* ac dec 100000 10k 20k
+* |  |    |     |   |
+* |  |    |     |   \- stop sweep frequency
+* |  |    |     \- start sweep frequency
+* |  |    \- samples per decade / octave / linear
+* |  \- think in decades (dec) or octaves (oct) or linear (lin)
+* \- do AC sweep (sweeps all input voltages that have an ac component defined)
+
+tran 10n 3m
+plot in
+* plot the voltage at the out node
+.endc
+* end of control section

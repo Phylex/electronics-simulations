@@ -1,0 +1,30 @@
+Low pass example
+
+vcc in 0 dc 0 ac 1
+
+* first low pass with an RC of 1/1000
+R1 in out1 10k
+C1 out1 0 100n
+
+* second low pass with RC of 1/10
+R2 in out2 100k
+C2 out2 0 1u
+
+* lp1 -> lp2
+R3 in int 10k
+C3 int 0 100n
+R4 int out3 100k
+C4 out3 0 1u
+
+* lp2 -> lp1
+R5 in int2 100k
+C5 int2 0 1u
+R6 int2 out4 10k
+C6 out4 0 100n
+
+.control
+ac dec 100 1 1meg
+set filetype=ascii
+write low-pass-ac-sweep.ngdat
+plot db(out1) db(out2) db(out3) db(out4)
+.endc
