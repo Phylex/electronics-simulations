@@ -1,12 +1,17 @@
-* High-pass filter with frequency analysis
-Vin IN 0 AC 1
-R1 IN OUT 10k
-C1 OUT GND 1n
+High-pass filter with frequency analysis
+
+*effectively a voltage divider with a 
+Vin in 0 dc 0 ac 1
+C1 in out 1n
+R1 out 0 10k
 .end
 
 .control
 ac dec 10 1Hz 100kHz
-setplot ac1
-plot db(out)
+as oct 10 1 100k
+setplot ac2
+set filetype=ascii
+write highpass-ac-sweep.ngdat db(out) out
+plot out
 .endc
 

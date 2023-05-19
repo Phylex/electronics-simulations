@@ -75,6 +75,14 @@ Rf pwm feedback_v 2MEG
 * comparator output load
 Rpwml pwm 0 200k
 
+
+* Power switch stage =============================================
+Rpow vcc switchdrain 10
+* X1 switchdrain pwm 0 ntd14n03r
+X1 switchdrain pwm 0 ntd3055-150
+.end
+
+
 .control
 tran 10n 3m
 set filetype=ascii
