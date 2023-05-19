@@ -40,14 +40,23 @@ def plot_ngspice(infile: click.File, output: click.Path,
     """
     if dark:
         plt.style.use('dark_background')
-    colors = cycle(PALETTS[colors])
-    title, _, simvars = parse_ngspice_sim_output(infile)
+    clrs = cycle(PALETTS[colors])
+    plot_type, title, _, simvars = parse_ngspice_sim_output(infile)
     fig, axes = plt.subplots(figsize=(width, height))
     axes.set_title(title)
     axes.set_xlabel(simvars[0]['type'] + " " + simvars[0]['unit'])
     axes.set_ylabel(simvars[1]['type'] + " " + simvars[1]['unit'])
-    for v in simvars[1:]:
-        axes.plot(simvars[0]['data'], v['data'],
-                  label=v['name'], color=next(colors))
+    match plot_type:
+        case "tran":
+            for v in simvars[1:]:
+                axes.plot(simvars[0]['data'], v['data'],
+                          label=v['name'], color=next(clrs))
+        case "ac":
+            axes.set_xscale('log')
+            for v in simvars[1:]:
+                xdata = list(map(lambda x: x[0], simvars[0]['data']))
+                ydata = list(map(lambda x: x[0], v['data']))
+                axes.plot(xdata, ydata,
+                          label=v['name'], color=next(clrs))
     fig.legend(bbox_to_anchor=(0.98, 0.8), title="Signals")
     fig.savefig(output + "." + filetype)
