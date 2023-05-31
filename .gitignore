@@ -8,3 +8,4 @@ dist/
 *.dat
 *.ods
 __pycache__/
+*.pdf

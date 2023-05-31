@@ -3,7 +3,7 @@ Integrator using the TL2231 OpAmp
 * This circuit is a standard integrator circuit using a general purpose TI operational amplifier
 
 * include the relevant library
-.include ../libs/ti-downloads/TLV2231.5_1
+.include ../libs/nabla.lib
 
 * supply voltage
 VCC vcc 0 5
@@ -11,17 +11,17 @@ VEE 0 vee 5
 
 * Input description
 * choose the input by commenting out the line that is unwanted
-* vin in 0 dc 0 ac 1 sin 0 1m 500
-vin2 in 0 dc 0 ac 1 pulse -1 1 100u 10u 10u .5m 1.02m 100 
+vin in 0 dc 0 ac 1 sin 0 1 500
+* vin2 in 0 dc 0 ac 1 pulse -1 1 100u 10u 10u .5m 1.02m 100 
 
 
 * inverting opamp
 R2 non_inv_in 0 100k
 R3 inv_in in 100k
-Xopamp non_inv_in inv_in vcc 0 out TLV2231
+Xopamp non_inv_in inv_in vcc vee out TLV2221_TI_5_2
 
 * feedback circuit
-R1 out inv_in 100k
+R1 out inv_in 600k
 
 * decuopling capacitor
 C1 vcc 0 100n
@@ -29,8 +29,8 @@ C1 vcc 0 100n
 
 * the following section defines what we want to simulate using the model
 .control
-tran 1u 10m
+tran 100n 10m
 *ac dec 1000000 1 50k
-* plot out non_inv_in
+plot out in
 .endc
 
