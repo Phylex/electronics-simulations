@@ -25,7 +25,8 @@ C1 q_not q_ctrl 10n
 
 * right R-C circuit
 R4 vcc q 100
-R3 vcc q_not_ctrl 10.45k
+* optimum seems close to 10.45k
+R3 vcc q_not_ctrl 9k
 C2 q_not_ctrl q 10n
 
 * cross coupled transistors
@@ -59,33 +60,45 @@ C5 int_out oa_in_inv 2.2n
 * amplifier with factor -> R12/R11
 Xintegrated_sig_amp_opamp int_out amp_inv_in vcc 0 triangle_wav TLV2371
 R11 amp_inv_in vgnd 50k
-R12 triangle_wav amp_inv_in 200k
+R12 triangle_wav amp_inv_in 75k
 
 
 * comparator stage that produces the pwm =========================
 
 * comparator stage
-* originally using a LMV7219
-Xcmp triangle_wav feedback_v vcc 0 pwm TLV2231_TI_5_2 
-* This voltage is going to be the feedback from the comparator
-R13 vcc feedback_v 15k
-R14 feedback_v 0 25k
+Xcmp triangle_wav vfeedback vcc 0 pwm TLV2231_TI_5_2 
+
 * feedback to add hysteresis
-Rf pwm feedback_v 2MEG
-* comparator output load
-Rpwml pwm 0 200k
+Rf pwm vfeedback 2MEG
 
 
-* Power switch stage =============================================
-Rpow vcc switchdrain 10
-* X1 switchdrain pwm 0 ntd14n03r
-X1 switchdrain pwm 0 ntd3055-150
-.end
+* Inductor Stage with switch and diode ===========================
+L1 vcc sw_node 250u
+Rd vcc rdamp 10
+Cd rdamp sw_node 100n
+* diode
+Xd sw_node out PMEG4050EP
+* switching transistor
+Xs sw_node pwm 0 ntd3055-150
+CF out 0 500u
+RL out 0 100
 
+* This voltage is going to be the feedback from the comparator
+Rvf1 out vfeedback 150k
+Rvf2 vfeedback 0 40k
+
+* .ic v(out)=0 
+* .ic v(q)=0
+* .ic v(q_not)=0
+* .ic v(q_not_ctrl)=0
+* .ic v(q_ctrl)=0
+* .ic v(sw_ctrl)=5
+* .ic v(triangle_wav)=0
 
 .control
-tran 10n 3m
+.option savecurrents
+tran 500n 8m
 set filetype=ascii
-write pwm.ngdat v(triangle_wav) v(pwm) v(vgnd) v(int_out) v(q) v(q_sym)
-plot triangle_wav feedback_v pwm int_out q_sym
+write pwm.ngdat v(triangle_wav) v(pwm) v(int_out) v(out) v(sw_node)
+plot vfeedback triangle_wav pwm out sw_node @L1[i]
 .endc
