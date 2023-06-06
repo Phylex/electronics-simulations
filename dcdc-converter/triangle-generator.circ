@@ -17,6 +17,10 @@ Triangle Generator
 VCC vcc 0 5
 vcmp vcmp 0 3
 
+* set initial conditions for the astable
+* oscillator
+.IC v(bq1)=0
+
 * left R-C circuit
 R1 vcc q_not 100
 R2 vcc q_ctrl 10k
@@ -68,11 +72,9 @@ R11 amp_inv_in vgnd 20k
 R12 amp_out amp_inv_in 15k
 
 * Load
-Xvoltage_cmp 
+*Xvoltage_cmp 
 R13 amp_out 0 100k
 
-* set initial conditions
-* .IC v(bq1)=0
 .end
 
 
@@ -80,6 +82,6 @@ R13 amp_out 0 100k
 tran 10n 10m
 set filetype=ascii
 write triangle-gen.ngdat v(amp_out) v(vgnd) v(int_out) v(q) v(q_sym)
-*plot amp_out int_out q_sym oa_in 
+plot amp_out int_out q_sym oa_in 
 .endc
 
