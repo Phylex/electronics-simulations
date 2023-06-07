@@ -81,7 +81,8 @@ Xd sw_node out PMEG4050EP
 * switching transistor
 Xs sw_node pwm 0 ntd3055-150
 CF out 0 500u
-RL out 0 100
+* load resistor on the output
+RL out 0 30
 
 * This voltage is going to be the feedback from the comparator
 Rvf1 out vfeedback 150k

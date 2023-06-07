@@ -1,3 +1,5 @@
+Boost converter circuit
+
 .include ../libs/nabla.lib
 .include ../libs/on_fet.lib
 
@@ -7,15 +9,18 @@ VG vg 0 dc 0 ac 0 pulse(0 5 70u 100n 100n 80u 150u)
 
 * Boost topology circuit
 L1 vcc sw_node 250m
+* diode
 Xd sw_node out PMEG4050EP
-Xs sw_node vg 0 ntd3055-150
+* switch
+*  drain   gate source  type
+Xs sw_node vg   0       ntd3055-150
 CF out 0 480u
 RL out 0 20
 
 .control
 .option savecurrents
 set filetype=ascii
-tran 100n 500m
+tran 500n 500m
 plot out sw_node @L1[i]
 write boost-circ.ngdat sw_node @L1[i]
 .endc
