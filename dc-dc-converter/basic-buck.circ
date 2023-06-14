@@ -1,0 +1,25 @@
+Near Ideal buck converter circuit
+.include ../libs/nabla.lib
+
+* Define the model of a near ideal voltage controled
+.model sw1 sw vt=1 vh=0.2 ron=.01 roff=100k
+
+* voltage source and pulse generator
+VCC vcc 0 10
+VG vg 0 dc 0 ac 0 pulse(0 2 120u 100n 100n 30u 150u)  
+
+* Boost topology circuit
+s1 vcc sw_node vg 0 sw1
+L1 sw_node out 100u
+* diode
+Xd 0 sw_node PMEG4050EP
+CF out 0 480u
+RL out 0 1
+
+.control
+.option savecurrents
+set filetype=ascii
+tran 10n 10m
+plot out sw_node @L1[i]
+write boost-circ.ngdat sw_node @L1[i]
+.endc
