@@ -26,7 +26,7 @@ C1 q_not q_ctrl 10n
 * right R-C circuit
 R4 vcc q 100
 * optimum seems close to 10.45k
-R3 vcc q_not_ctrl 9k
+R3 vcc q_not_ctrl 9.5k
 C2 q_not_ctrl q 10n
 
 * cross coupled transistors
@@ -57,19 +57,19 @@ R9 q_sym oa_in_inv 100k
 R10 int_out oa_in_inv 300k
 C5 int_out oa_in_inv 2.2n
 
-* amplifier with factor -> R12/R11
+* amplifier with factor -> 1 + (R12/R11)
 Xintegrated_sig_amp_opamp int_out amp_inv_in vcc 0 triangle_wav TLV2371
 R11 amp_inv_in vgnd 50k
-R12 triangle_wav amp_inv_in 75k
+R12 triangle_wav amp_inv_in 180k
 
 
 * comparator stage that produces the pwm =========================
 
 * comparator stage
-Xcmp triangle_wav vfeedback vcc 0 pwm TLV2231_TI_5_2 
+Xcmp triangle_wav vampfdbk vcc 0 pwm TLV2231_TI_5_2 
 
 * feedback to add hysteresis
-Rf pwm vfeedback 2MEG
+Rf pwm vfeedback 4MEG
 
 
 * Inductor Stage with switch and diode ===========================
@@ -82,11 +82,24 @@ Xd sw_node out PMEG4050EP
 Xs sw_node pwm 0 ntd3055-150
 CF out 0 500u
 * load resistor on the output
-RL out 0 30
+RL out 0 100
 
-* This voltage is going to be the feedback from the comparator
-Rvf1 out vfeedback 150k
-Rvf2 vfeedback 0 40k
+* Amplifier for feedback voltage =================================
+* Output voltage reduced via a Voltage divider
+Rvf1 out vfeedback 200k
+Rvf2 vfeedback 0 20k
+
+* vref goes to inv it is the thing we are comparing to
+* Also either a voltage source or a resistor divider
+Rr1 vcc vref 70k
+Rr2 vref 0   10k
+
+Xfdbamp vfeedback vref vcc 0 vampfdbk TLV2221_TI_5_2
+
+* feedback circuit
+Rctrlfdb vampfdbk vref 40k
+
+
 
 * .ic v(out)=0 
 * .ic v(q)=0
@@ -98,8 +111,9 @@ Rvf2 vfeedback 0 40k
 
 .control
 .option savecurrents
-tran 500n 8m
+tran 500n 20m
 set filetype=ascii
 write pwm.ngdat v(triangle_wav) v(pwm) v(int_out) v(out) v(sw_node)
-plot vfeedback triangle_wav pwm out sw_node @L1[i]
+plot triangle_wav vfeedback vampfdbk pwm out @L1[i]
+plot out @L1[i]
 .endc
