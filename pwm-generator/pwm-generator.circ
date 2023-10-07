@@ -25,7 +25,7 @@ C1 q_not q_ctrl 10n
 
 * right R-C circuit
 R4 vcc q 100
-R3 vcc q_not_ctrl 10.45k
+R3 vcc q_not_ctrl 10.5k
 C2 q_not_ctrl q 10n
 
 * cross coupled transistors
